@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+package authwise.types.core.v1alpha1;
+
+import "authwise/types/core/v1alpha1/password.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
+
+option go_package = "gitlab.authwise.io/authwise/authapi/gen/pb/authwise/types/core/v1alpha1";
+
+enum LogLevel {
+	LOG_LEVEL_UNSPECIFIED = 0;
+	LOG_LEVEL_DISABLED = 1;
+	LOG_LEVEL_ERROR    = 2;
+	LOG_LEVEL_WARN     = 3;
+	LOG_LEVEL_INFO     = 4;
+	LOG_LEVEL_DEBUG    = 5;
+	LOG_LEVEL_TRACE    = 6;
+};
+
+enum CorsOptionsMode {
+	CORS_OPTIONS_MODE_UNSPECIFIED = 0;
+	CORS_OPTIONS_MODE_STRICT = 1;
+	CORS_OPTIONS_MODE_LAX    = 2;
+};
+
+message LoggingConfig {
+	LogLevel log_level = 1;
+	bool include_caller = 2;
+	bool include_stack_trace = 3;
+	bool send_to_event_stream = 4;
+}
+
+message CorsConfig {
+	CorsOptionsMode options_mode = 1;
+	repeated string allowed_headers = 2;
+	repeated string allowed_origins = 3;
+}
+
+message InteractiveClientConfig {
+	string interaction_forward_uri = 1;
+  repeated string allowed_redirect_uris = 2;
+	int32 access_token_expire_seconds = 3;
+	CorsConfig cors = 4;
+	LoggingConfig logging = 5;
+  IntegrationConfig flow_integration_config = 6;
+}
+
+// TODO - config split between this and issuer
+message TenantConfig {
+	string interaction_forward_uri = 1;
+	int32 access_token_expire_seconds = 2;
+	string cookie_domain = 3;
+	CorsConfig cors = 4;
+	LoggingConfig logging = 5;
+}
+
+message DomainConfig {
+	string cookie_domain = 1;
+}
+
+message IntegrationConfig {
+  string endpoint_name = 1;
+}
+
+// TODO - config split between this and issuer
+message IssuerConfig {
+  string external_ui_url = 1;
+	int32 access_token_expire_seconds = 2;
+	string cookie_domain = 3;
+	CorsConfig cors = 4;
+	LoggingConfig logging = 5;
+  oneof provider_selector {
+    SingleRealmProviderSelector single_realm_provider_selector = 101;
+    MultiRealmProviderSelector multi_realm_provider_selector = 102;
+    ExternalProviderSelector external_provider_selector = 103;
+  }
+  IntegrationConfig flow_integration_config = 6;
+}
+
+message SingleRealmProviderSelector {
+	string realm_name = 1;
+}
+
+message MultiRealmProviderSelector {
+	repeated string realm_names = 1;
+}
+
+message ExternalProviderSelector {
+	string endpoint_name = 1;
+}
+
+message AuthorizationConfig { 
+  bool include_roles = 1;
+  bool include_permissions = 2;
+}
+
+message ScopesConfig {
+  bool openid = 1;
+  AuthorizationConfig authorization = 2;
+}
+
+message AudienceConfig {
+	string interaction_forward_uri = 1;
+	int32 access_token_expire_seconds = 2;
+  ScopesConfig scopes = 3;
+	CorsConfig cors = 4;
+	LoggingConfig logging = 5;
+  IntegrationConfig flow_integration_config = 6;
+}
+
+/*
+
+Provider configurations for each type of provider
+
+*/
+
+message ProviderAuthwise {
+	string issuer = 1; 
+	string client_id = 2;
+  // In case you need to get the token from a different server side address
+  string internal_issuer = 3;
+}
+
+message ProviderUsernamePassword {
+	string password_hash_type = 2;
+	repeated PasswordValidatorConfig password_validators = 3;
+  bool allow_signup = 4;
+  string external_endpoint_name = 5;
+}
+
+message ProviderMicrosoft {
+	string scope = 1;
+	string client_id = 2;
+	string client_secret = 3;
+	string prompt_style = 4;
+	string tenant = 5;
+}
+
+message ProviderGoogle {
+	string client_id = 1;
+	string client_secret = 2;
+	string scope = 3;
+	string prompt = 4;
+}
+
+message ProviderGitHub {
+	string client_id = 1;
+	string client_secret = 2;
+	bool allow_signup = 3;
+	string prompt = 4;
+	string display = 5;
+	string scope = 6;
+}
+
+message ProviderLinkedIn {
+	string client_id = 1;
+	string client_secret = 2;
+	string scope = 3;
+	string include_granted_scopes = 4;
+}
+
+message ProviderFacebook {
+	string client_id = 1;
+	string client_secret = 2;
+	string scope = 3;
+	string user_fields = 4;
+}
+
+message ProviderDropbox {
+	string client_id = 1;
+	string client_secret = 2;
+	string scope = 3;
+	string include_granted_scopes = 4;
+}
+
+message ProviderOkta {
+	string client_id = 1;
+	string client_secret = 2;
+	string scope = 3;
+	string tenant_url = 4;
+}
+
+message ProviderAuth0 {
+	string client_id = 1;
+	string client_secret = 2;
+	string scope = 3;
+	string tenant_url = 4;
+}

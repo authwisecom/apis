@@ -1,0 +1,223 @@
+syntax = "proto3";
+
+package authwise.types.core.v1alpha1;
+
+import "authwise/types/core/v1alpha1/config.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/descriptor.proto";
+
+option go_package = "gitlab.authwise.io/authwise/authapi/gen/pb/authwise/types/core/v1alpha1";
+
+// TODO - Do we need to have key prefix values in the objects?
+// TODO - implement strategy for field values
+
+enum SEARCH_OPERATOR_TYPE {
+  StringEquals = 0;
+  StringNotEquals = 1;
+  StringMatch = 2;
+  StringIn = 3;
+  StringNotIn = 4;
+  NumberEquals = 5;
+  NumberNotEquals = 6;
+  NumberIn = 7;
+};
+
+enum SECRET_ENCODING {
+  Plain = 0;
+  Base64 = 1;
+};
+
+enum ENDPOINT_TYPE {
+  REST = 0;
+  GRPC = 1;
+};
+
+message AssociationRequest {
+  repeated string set = 1;
+  repeated string remove = 2;
+}
+
+message SearchPredicateDescriptor {
+  string name = 1;
+  string label = 2;
+  repeated SEARCH_OPERATOR_TYPE operators = 3;
+}
+
+message SearchPredicate {
+  string name = 1;
+  SEARCH_OPERATOR_TYPE operator = 2;
+  string string_value = 3;
+  repeated string string_array_value = 4;
+  double number_value = 5;
+  repeated double number_array_value = 6;
+}
+
+message Tenant {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string appearance_profile_id = 4; // @gotags: yaml:"appearance_profile_id"
+  TenantConfig config = 5;
+}
+
+message Domain {
+  string name = 1;
+  map<string, string> labels = 2;
+  DomainConfig config = 3;
+}
+
+message Issuer {
+  string name = 1;
+  map<string, string> labels = 2;
+  string domain_name = 3;
+  string path = 4;
+  IssuerConfig config = 5;
+}
+
+message Realm {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string user_database_type = 4; // @gotags: yaml:"user_database_type"
+}
+
+message Audience {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string appearance_profile_id = 4; // @gotags: yaml:"appearance_profile_id"
+  AudienceConfig config = 5;
+}
+
+message User {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string given_name = 4; // @gotags: yaml:"given_name"
+  string family_name = 5; // @gotags: yaml:"family_name"
+  string middle_name = 6; // @gotags: yaml:"middle_name"
+  string nickname = 7;
+  string preferred_username = 8; // @gotags: yaml:"preferred_username"
+  string email = 9;
+  bool email_verified = 10; // @gotags: yaml:"email_verified"
+  string gender = 11;
+  string phone_number = 12; // @gotags: yaml:"phone_number"
+  bool phone_number_verified = 13; // @gotags: yaml:"phone_number_verified"
+  string profile = 14;
+  string picture = 15;
+  string website = 16;
+  string birthdate = 17;
+  string zoneinfo = 18;
+  string locale = 19;
+  google.protobuf.Struct metadata = 20; 
+  google.protobuf.Struct extra_fields = 21; // @gotags: yaml:"extra_fields"
+  google.protobuf.Timestamp updated_at = 22; // @gotags: yaml:"updated_at"
+}
+
+message Provider {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string provider_type = 4; // @gotags: yaml:"provider_type"
+  google.protobuf.Any config = 5;
+}
+
+message Client {
+  string name = 1;
+  map<string, string> labels = 2;
+  string audience_id = 3;
+  string display_name = 4;
+  string grant_type = 5; // @gotags: yaml:"grant_type"
+  string application_url = 6; // @gotags: yaml:"login_url"
+  string login_url = 7; // @gotags: yaml:"login_url"
+  string logout_url = 8; // @gotags: yaml:"login_url"
+  string appearance_profile_id = 9; // @gotags: yaml:"appearance_profile_id"
+  google.protobuf.Any config = 10;
+}
+
+message Role {
+  string name = 1;
+  string display_name = 2;
+  bool auto = 3;
+}
+
+message Permission {
+  string name = 1;
+  string display_name = 2;
+}
+
+message Scope {
+  string name = 1;
+  string kind = 2;
+  bool auto = 3;
+}
+
+message Event {
+  string name = 1;
+  string issuer_id = 2; // @gotags: yaml:"request_id"
+  string request_id = 3; // @gotags: yaml:"request_id"
+  string client_id = 4; // @gotags: yaml:"client_id"
+  string realm_id = 5; // @gotags: yaml:"realm_id"
+  string user_id = 6; // @gotags: yaml:"user_id"
+  string session_id = 7; // @gotags: yaml:"session_id"
+  string interaction_id = 8; // @gotags: yaml:"interaction_id"
+  string event_type = 9; // @gotags: yaml:"event_type"
+  string event_message = 10; // @gotags: yaml:"event_message"
+  string start_state = 11; // @gotags: yaml:"start_state"
+  string end_state = 12; // @gotags: yaml:"end_state"
+  google.protobuf.Timestamp start_time = 13; // @gotags: yaml:"start_time"
+  google.protobuf.Timestamp end_time = 14; // @gotags: yaml:"end_time"
+  google.protobuf.Struct attributes = 15;
+  google.protobuf.Timestamp created_at = 16; // @gotags: yaml:"created_at"
+}
+
+message Theme {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string stylesheet = 4;
+  google.protobuf.Struct stylesheet_attributes = 5;
+  string content_schema = 6; // @gotags: yaml:"content_schema"
+  google.protobuf.Struct content = 7;
+}
+
+message AppearanceProfile {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string theme_id = 4; // @gotags: yaml:"theme_id"
+  google.protobuf.Struct stylesheet_attributes = 5;
+  google.protobuf.Struct content = 6;
+}
+
+message SecuredUser {
+  string audience = 1;
+  string jti = 2;
+  User user = 3;
+}
+
+message Secret {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  SECRET_ENCODING encoding = 4;
+  string value = 5;
+}
+
+message Asset {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+  string mime_type = 4; // @gotags: yaml:"media_type"
+}
+
+message Endpoint {
+  string name = 1;
+  map<string, string> labels = 2;
+  string display_name = 3;
+	ENDPOINT_TYPE endpoint_type = 4;
+	string address = 5;
+	bool insecure = 6; 
+}

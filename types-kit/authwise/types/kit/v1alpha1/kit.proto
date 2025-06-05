@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package authwise.types.kit.v1alpha1;
+
+import "google/protobuf/struct.proto";
+import "authwise/types/core/v1alpha1/core.proto";
+
+option go_package = "gitlab.authwise.io/authwise/authapi/gen/pb/authwise/types/kit/v1alpha1";
+
+enum PROVIDER_RESOLVER_FIELD_TYPE {
+  Text = 0;
+  Select = 1;
+};
+
+message Authentication {
+  string id_token = 1;
+  string jti = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+  string client_id = 5;
+  int32 access_expires_seconds = 6;
+  google.protobuf.Struct userinfo = 7;
+}
+
+message Grant {
+  string sub = 1;
+  string client_id = 2;
+  google.protobuf.Struct id_fields = 3;
+  google.protobuf.Struct access_fields = 4;
+  string audience = 5;
+  int32 access_expire_seconds = 6;
+  bool generate_id = 7;
+  bool generate_access = 8;
+}
+
+message ProviderResolverField {
+  string name = 1;
+  string label = 2;
+  string type = 3;
+  map<string, string> options = 4;
+  string value = 5;
+}
+
+message ProviderSelection {
+  // Name of the provider - if provided none of the other fields should be populated
+  string provider_name = 1;
+  // Label expression to apply to providers, accross all realms unless constrained by realm_name or realm_selection
+  string provider_selection = 2;
+  // Name of the realm to constrain the selection 
+  string realm_name = 3;
+  // Label expression to contrain the realms
+  string realm_selection = 4;
+}
+
+message ProviderResolverResult {
+  repeated ProviderResolverField fields = 1;
+  ProviderSelection selected_provider = 2;
+  repeated ProviderSelection other_providers = 3;
+}
+
+
+message ProviderResolverInput {
+  map<string, string> fields = 1;
+}
+
+ 
